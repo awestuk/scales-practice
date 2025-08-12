@@ -59,6 +59,19 @@
                                 </div>
                             </div>
                             
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           id="show_notes" 
+                                           name="show_notes"
+                                           <?= ($config['show_notes'] ?? '1') === '1' ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="show_notes">
+                                        Show scale notes on practice cards
+                                    </label>
+                                </div>
+                            </div>
+                            
                             <button type="submit" class="btn btn-primary">Save Settings</button>
                         </form>
                         
@@ -128,6 +141,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- Version footer -->
+        <div class="text-center text-muted mt-5 mb-3">
+            <small>Version 1.1.0</small>
         </div>
     </div>
     

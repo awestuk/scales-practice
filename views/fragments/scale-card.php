@@ -4,7 +4,7 @@
             <?= htmlspecialchars($scale['name']) ?>
         </h1>
         
-        <?php if (!empty($scale['notes'])): ?>
+        <?php if ($showNotes && !empty($scale['notes'])): ?>
             <p class="text-muted fs-5 mb-4"><?= htmlspecialchars($scale['notes']) ?></p>
         <?php endif; ?>
         

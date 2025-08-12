@@ -58,29 +58,39 @@ php -S 0.0.0.0:8081 -t public
 flyctl auth login
 ```
 
-2. Create app (first time only):
+2. Deploy the app (first time):
 ```bash
-flyctl launch --name piano-scale-reps --region lhr --no-deploy
+# Since fly.toml already exists, just deploy directly
+flyctl deploy
 ```
 
-3. Create persistent volume for SQLite:
+3. Create persistent volume for SQLite (if not already created):
 ```bash
 flyctl volumes create sqlite_data --size 1 --region lhr
 ```
 
-4. Set app secret:
+4. Set app secret (optional but recommended):
 ```bash
 flyctl secrets set APP_KEY=$(openssl rand -hex 16)
 ```
 
-5. Deploy:
-```bash
-flyctl deploy
-```
-
-6. Open deployed app:
+5. Open deployed app:
 ```bash
 flyctl open
+```
+
+### Alternative: Create New App
+
+If you want to use a different app name or the above doesn't work:
+
+```bash
+# Remove existing fly.toml
+rm fly.toml
+
+# Launch with your preferred name
+flyctl launch --name your-app-name --region lhr
+
+# Then follow steps 3-5 above
 ```
 
 ## Project Structure

@@ -55,6 +55,9 @@ class ApiController
             $attemptNo = $session->getNextAttemptNo();
             $this->scheduler->updateLastShown($session->id, $scale['scale_id'], $attemptNo);
             
+            // Get show_notes setting
+            $showNotes = $this->sessionService->getShowNotes();
+            
             // Render scale card
             ob_start();
             include dirname(__DIR__, 2) . '/views/fragments/scale-card.php';
@@ -150,6 +153,7 @@ class ApiController
         $data = $request->getParsedBody();
         
         // Update required_successes
+        $value = 3; // default
         if (isset($data['required_successes'])) {
             $value = max(1, min(10, (int)$data['required_successes']));
             $this->sessionService->updateConfig('required_successes', (string)$value);
@@ -159,8 +163,12 @@ class ApiController
         $allowRepeat = isset($data['allow_repeat']) ? '1' : '0';
         $this->sessionService->updateConfig('allow_repeat_when_last_only', $allowRepeat);
         
+        // Update show_notes
+        $showNotes = isset($data['show_notes']) ? '1' : '0';
+        $this->sessionService->updateConfig('show_notes', $showNotes);
+        
         // Reseed active session if required_successes changed
-        $session = Session::findActive();
+        $session = $this->sessionService->getOrCreateActiveSession();
         if ($session && $session->required_successes != $value) {
             $this->sessionService->resetSession();
         }

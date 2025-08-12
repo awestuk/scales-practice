@@ -7,21 +7,22 @@ use PDO;
 class Session
 {
     public int $id;
+    public string $browser_session_id;
     public string $session_date;
     public string $started_at;
     public ?string $ended_at;
     public int $required_successes;
     public string $status;
     
-    public static function findActive(): ?self
+    public static function findActive(string $browserSessionId): ?self
     {
         $today = date('Y-m-d');
         $stmt = Db::getInstance()->prepare('
             SELECT * FROM sessions 
-            WHERE session_date = ? AND status = "active"
+            WHERE browser_session_id = ? AND session_date = ? AND status = "active"
             LIMIT 1
         ');
-        $stmt->execute([$today]);
+        $stmt->execute([$browserSessionId, $today]);
         $stmt->setFetchMode(PDO::FETCH_CLASS, self::class);
         return $stmt->fetch() ?: null;
     }
@@ -36,19 +37,20 @@ class Session
         return $stmt->fetch() ?: null;
     }
     
-    public static function createNew(int $requiredSuccesses): self
+    public static function createNew(string $browserSessionId, int $requiredSuccesses): self
     {
         $now = date('c');
         $today = date('Y-m-d');
         
         $stmt = Db::getInstance()->prepare('
-            INSERT INTO sessions (session_date, started_at, required_successes, status)
-            VALUES (?, ?, ?, "active")
+            INSERT INTO sessions (browser_session_id, session_date, started_at, required_successes, status)
+            VALUES (?, ?, ?, ?, "active")
         ');
-        $stmt->execute([$today, $now, $requiredSuccesses]);
+        $stmt->execute([$browserSessionId, $today, $now, $requiredSuccesses]);
         
         $session = new self();
         $session->id = (int)Db::getInstance()->lastInsertId();
+        $session->browser_session_id = $browserSessionId;
         $session->session_date = $today;
         $session->started_at = $now;
         $session->ended_at = null;

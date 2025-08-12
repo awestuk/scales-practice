@@ -41,6 +41,7 @@ class Migrations
         $this->db->exec('
             CREATE TABLE IF NOT EXISTS sessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                browser_session_id TEXT NOT NULL,
                 session_date TEXT NOT NULL,
                 started_at TEXT NOT NULL,
                 ended_at TEXT,
@@ -53,6 +54,12 @@ class Migrations
         $this->db->exec('
             CREATE INDEX IF NOT EXISTS idx_sessions_date_status 
             ON sessions(session_date, status)
+        ');
+        
+        // Create index for browser session lookups
+        $this->db->exec('
+            CREATE INDEX IF NOT EXISTS idx_sessions_browser 
+            ON sessions(browser_session_id, session_date, status)
         ');
         
         // Session scale state table
@@ -106,6 +113,7 @@ class Migrations
         
         $stmt->execute(['required_successes', '3']);
         $stmt->execute(['allow_repeat_when_last_only', '1']);
+        $stmt->execute(['show_notes', '1']);
         
         // Seed common major scales
         $scales = [

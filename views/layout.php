@@ -65,6 +65,11 @@
                 </button>
             </div>
         </div>
+        
+        <!-- Version footer -->
+        <div class="text-center text-muted mt-5 mb-3">
+            <small>Version 1.1.0</small>
+        </div>
     </div>
     
     <!-- CSRF for HTMX -->

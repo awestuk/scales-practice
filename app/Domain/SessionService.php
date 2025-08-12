@@ -7,10 +7,20 @@ use App\Storage\Db;
 
 class SessionService
 {
+    private function getBrowserSessionId(): string
+    {
+        if (!isset($_SESSION['browser_session_id'])) {
+            $_SESSION['browser_session_id'] = bin2hex(random_bytes(16));
+        }
+        return $_SESSION['browser_session_id'];
+    }
+    
     public function getOrCreateActiveSession(): Session
     {
-        // Check for existing active session today
-        $session = Session::findActive();
+        $browserSessionId = $this->getBrowserSessionId();
+        
+        // Check for existing active session today for this browser session
+        $session = Session::findActive($browserSessionId);
         
         if ($session) {
             return $session;
@@ -18,7 +28,7 @@ class SessionService
         
         // Create new session with current config
         $requiredSuccesses = $this->getRequiredSuccesses();
-        $session = Session::createNew($requiredSuccesses);
+        $session = Session::createNew($browserSessionId, $requiredSuccesses);
         
         // Initialize all scales for the session
         $scales = Scale::findAll();
@@ -30,8 +40,10 @@ class SessionService
     
     public function resetSession(): Session
     {
+        $browserSessionId = $this->getBrowserSessionId();
+        
         // End current session if exists
-        $current = Session::findActive();
+        $current = Session::findActive($browserSessionId);
         if ($current) {
             $current->end();
         }
@@ -42,13 +54,14 @@ class SessionService
     
     public function canStartNewDay(): bool
     {
+        $browserSessionId = $this->getBrowserSessionId();
         $today = date('Y-m-d');
         $stmt = Db::getInstance()->prepare('
-            SELECT COUNT(*) FROM sessions WHERE session_date = ?
+            SELECT COUNT(*) FROM sessions WHERE browser_session_id = ? AND session_date = ?
         ');
-        $stmt->execute([$today]);
+        $stmt->execute([$browserSessionId, $today]);
         
-        // Can start new day if no sessions today
+        // Can start new day if no sessions today for this browser session
         return $stmt->fetchColumn() == 0;
     }
     
@@ -87,7 +100,8 @@ class SessionService
     
     public function reseedActiveSession(array $scaleIds): void
     {
-        $session = Session::findActive();
+        $browserSessionId = $this->getBrowserSessionId();
+        $session = Session::findActive($browserSessionId);
         if (!$session) {
             return;
         }
@@ -100,5 +114,16 @@ class SessionService
         
         // Re-initialize with new scales
         $session->initializeScales($scaleIds);
+    }
+    
+    public function getShowNotes(): bool
+    {
+        $stmt = Db::getInstance()->prepare('
+            SELECT value FROM config WHERE key = "show_notes"
+        ');
+        $stmt->execute();
+        $value = $stmt->fetchColumn();
+        
+        return $value === '1';
     }
 }

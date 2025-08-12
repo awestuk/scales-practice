@@ -1,32 +1,43 @@
-primary_region = "lhr"
+# fly.toml app configuration file generated for scales-practice on 2025-08-12T10:21:23+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'scales-practice'
+primary_region = 'lhr'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [env]
-  APP_ENV = "production"
-  PHP_MEMORY_LIMIT = "128M"
+  APP_ENV = 'production'
+  PHP_MEMORY_LIMIT = '128M'
+
+[[mounts]]
+  source = 'sqlite_data'
+  destination = '/var/www/html/data'
 
 [http_service]
   internal_port = 8081
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
 
   [http_service.concurrency]
-    type = "connections"
+    type = 'connections'
     hard_limit = 25
     soft_limit = 20
 
   [[http_service.checks]]
-    grace_period = "5s"
-    interval = "15s"
-    method = "GET"
-    path = "/health"
-    protocol = "http"
-    timeout = "2s"
+    interval = '15s'
+    timeout = '2s'
+    grace_period = '5s'
+    method = 'GET'
+    path = '/health'
+    protocol = 'http'
 
-[[mounts]]
-  source = "sqlite_data"
-  destination = "/var/www/html/data"
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
