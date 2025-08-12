@@ -115,7 +115,6 @@
                                     <thead>
                                         <tr>
                                             <th>Scale Name</th>
-                                            <th>Notes</th>
                                             <th width="100">Action</th>
                                         </tr>
                                     </thead>
@@ -123,7 +122,6 @@
                                         <?php foreach ($scales as $scale): ?>
                                             <tr>
                                                 <td><?= htmlspecialchars($scale->name) ?></td>
-                                                <td><?= htmlspecialchars($scale->notes ?? '') ?></td>
                                                 <td>
                                                     <button class="btn btn-sm btn-danger"
                                                             hx-post="/scale/delete/<?= $scale->id ?>"
