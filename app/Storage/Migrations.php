@@ -15,7 +15,71 @@ class Migrations
     public function run(): void
     {
         $this->createTables();
+        $this->migrateExistingTables();
         $this->seedData();
+    }
+    
+    private function migrateExistingTables(): void
+    {
+        // Check if browser_session_id column exists in sessions table
+        $stmt = $this->db->query("PRAGMA table_info(sessions)");
+        $columns = $stmt->fetchAll();
+        $hasBrowserSessionId = false;
+        
+        foreach ($columns as $column) {
+            if ($column['name'] === 'browser_session_id') {
+                $hasBrowserSessionId = true;
+                break;
+            }
+        }
+        
+        // If column doesn't exist, we need to migrate the table
+        if (!$hasBrowserSessionId && $this->tableExists('sessions')) {
+            // Create new table with updated schema
+            $this->db->exec('
+                CREATE TABLE IF NOT EXISTS sessions_new (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    browser_session_id TEXT NOT NULL DEFAULT "default",
+                    session_date TEXT NOT NULL,
+                    started_at TEXT NOT NULL,
+                    ended_at TEXT,
+                    required_successes INTEGER NOT NULL,
+                    status TEXT CHECK(status IN ("active", "completed"))
+                )
+            ');
+            
+            // Copy existing data with default browser_session_id
+            $this->db->exec('
+                INSERT INTO sessions_new (id, browser_session_id, session_date, started_at, ended_at, required_successes, status)
+                SELECT id, "default", session_date, started_at, ended_at, required_successes, status
+                FROM sessions
+            ');
+            
+            // Drop old table and rename new one
+            $this->db->exec('DROP TABLE sessions');
+            $this->db->exec('ALTER TABLE sessions_new RENAME TO sessions');
+            
+            // Recreate indexes
+            $this->db->exec('
+                CREATE INDEX IF NOT EXISTS idx_sessions_date_status 
+                ON sessions(session_date, status)
+            ');
+            
+            $this->db->exec('
+                CREATE INDEX IF NOT EXISTS idx_sessions_browser 
+                ON sessions(browser_session_id, session_date, status)
+            ');
+        }
+    }
+    
+    private function tableExists(string $tableName): bool
+    {
+        $stmt = $this->db->prepare("
+            SELECT name FROM sqlite_master 
+            WHERE type='table' AND name=?
+        ");
+        $stmt->execute([$tableName]);
+        return $stmt->fetch() !== false;
     }
     
     private function createTables(): void
