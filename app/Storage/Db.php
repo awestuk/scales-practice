@@ -56,4 +56,12 @@ class Db
     {
         self::getInstance()->rollBack();
     }
+    
+    /**
+     * Set instance for testing purposes
+     */
+    public static function setInstance(?PDO $instance): void
+    {
+        self::$instance = $instance;
+    }
 }

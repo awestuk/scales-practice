@@ -40,26 +40,45 @@ class Scheduler
             $candidates = array_filter($candidates, fn($c) => $c['scale_id'] != $prevScaleId);
         }
         
-        // Sort by scheduling priority
-        usort($candidates, function($a, $b) {
-            // 1. Never shown first (NULL last_shown_at)
-            if (is_null($a['last_shown_at']) && !is_null($b['last_shown_at'])) return -1;
-            if (!is_null($a['last_shown_at']) && is_null($b['last_shown_at'])) return 1;
-            
-            // 2. Oldest last_shown_at
-            if ($a['last_shown_at'] != $b['last_shown_at']) {
-                return ($a['last_shown_at'] ?? 0) <=> ($b['last_shown_at'] ?? 0);
-            }
-            
-            // 3. Higher tokens_remaining
-            if ($a['tokens_remaining'] != $b['tokens_remaining']) {
-                return $b['tokens_remaining'] <=> $a['tokens_remaining'];
-            }
-            
-            // 4. Random tiebreak
-            return rand(-1, 1);
-        });
+        // Use weighted random selection
+        $weights = [];
+        $totalWeight = 0;
         
+        foreach ($candidates as $index => $candidate) {
+            // Base weight: 1 for never attempted, 2 for attempted scales
+            $weight = is_null($candidate['last_shown_at']) ? 1.0 : 2.0;
+            
+            // Bonus weight for scales needing more work (0.1 per remaining token)
+            // This gives a slight preference to scales that need more practice
+            $weight += $candidate['tokens_remaining'] * 0.1;
+            
+            // Recency bonus: scales shown longer ago get a small boost
+            // This prevents any scale from being ignored too long
+            if (!is_null($candidate['last_shown_at'])) {
+                $lastShownValues = array_filter(array_column($candidates, 'last_shown_at'), fn($v) => !is_null($v));
+                if (!empty($lastShownValues)) {
+                    $maxLastShown = max($lastShownValues);
+                    $ageRatio = 1 - ($candidate['last_shown_at'] / ($maxLastShown + 1));
+                    $weight += $ageRatio * 0.5; // Up to 0.5 bonus for oldest scales
+                }
+            }
+            
+            $weights[$index] = $weight;
+            $totalWeight += $weight;
+        }
+        
+        // Select scale using weighted random
+        $random = mt_rand() / mt_getrandmax() * $totalWeight;
+        $cumulative = 0;
+        
+        foreach ($weights as $index => $weight) {
+            $cumulative += $weight;
+            if ($random <= $cumulative) {
+                return $candidates[$index];
+            }
+        }
+        
+        // Fallback (should never reach here)
         return $candidates[0] ?? null;
     }
     
