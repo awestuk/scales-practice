@@ -98,7 +98,7 @@ class Migration001InitialSchema extends Migration
             INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)
         ');
         
-        $stmt->execute(['required_successes', '3']);
+        $stmt->execute(['required_successes', '2']);
         $stmt->execute(['allow_repeat_when_last_only', '1']);
         
         // Seed common major scales

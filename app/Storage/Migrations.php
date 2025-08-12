@@ -175,7 +175,7 @@ class Migrations
             INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)
         ');
         
-        $stmt->execute(['required_successes', '3']);
+        $stmt->execute(['required_successes', '2']);
         $stmt->execute(['allow_repeat_when_last_only', '1']);
         $stmt->execute(['show_notes', '1']);
         

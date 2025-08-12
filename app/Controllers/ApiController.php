@@ -157,7 +157,7 @@ class ApiController
         $data = $request->getParsedBody();
         
         // Update required_successes
-        $value = 3; // default
+        $value = $this->sessionService->getRequiredSuccesses(); // Get current value as default
         if (isset($data['required_successes'])) {
             $value = max(1, min(10, (int)$data['required_successes']));
             $this->sessionService->updateConfig('required_successes', (string)$value);

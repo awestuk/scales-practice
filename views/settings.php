@@ -39,7 +39,7 @@
                                        name="required_successes" 
                                        min="1" 
                                        max="10" 
-                                       value="<?= $config['required_successes'] ?? 3 ?>"
+                                       value="<?= $config['required_successes'] ?? 2 ?>"
                                        required>
                                 <div class="form-text">
                                     Number of first-try successes needed per scale (1-10)

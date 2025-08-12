@@ -39,7 +39,7 @@ $db->exec('
     
     CREATE TABLE sessions (
         id INTEGER PRIMARY KEY,
-        required_successes INTEGER DEFAULT 3,
+        required_successes INTEGER DEFAULT 2,
         browser_session_id TEXT DEFAULT "default"
     );
     
@@ -54,15 +54,21 @@ $db->exec('
     );
 ');
 
-// Insert test data
+// Insert test data with config
+$db->exec("INSERT INTO config (key, value) VALUES ('required_successes', '2')");
 $db->exec("INSERT INTO config (key, value) VALUES ('allow_repeat_when_last_only', '1')");
-$db->exec("INSERT INTO sessions (id, required_successes) VALUES (1, 3)");
+
+// Get configured value
+$stmt = $db->query("SELECT value FROM config WHERE key = 'required_successes'");
+$requiredSuccesses = (int)($stmt->fetchColumn() ?: 2);
+
+$db->exec("INSERT INTO sessions (id, required_successes) VALUES (1, $requiredSuccesses)");
 
 // Create 10 test scales
 for ($i = 1; $i <= 10; $i++) {
     $db->exec("INSERT INTO scales (id, name) VALUES ($i, 'Scale $i')");
     $db->exec("INSERT INTO session_scale_state (session_id, scale_id, tokens_remaining, last_shown_at) 
-               VALUES (1, $i, 3, " . ($i <= 3 ? $i : 'NULL') . ")");
+               VALUES (1, $i, $requiredSuccesses, " . ($i <= 3 ? $i : 'NULL') . ")");
 }
 
 // Override Db instance for testing
@@ -102,9 +108,9 @@ for ($i = 0; $i < 100; $i++) {
     
     // Simulate random success/failure (70% success rate)
     if (rand(1, 10) <= 7) {
-        $scheduler->recordOutcome(1, $scaleId, 'success', 3);
+        $scheduler->recordOutcome(1, $scaleId, 'success', $requiredSuccesses);
     } else {
-        $scheduler->recordOutcome(1, $scaleId, 'fail', 3);
+        $scheduler->recordOutcome(1, $scaleId, 'fail', $requiredSuccesses);
     }
     
     $prevScaleId = $scaleId;

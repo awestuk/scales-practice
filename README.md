@@ -5,7 +5,7 @@ A touch-friendly web application for mastering piano scales through intelligent 
 ## How It Works
 
 ### The Streak System
-Each scale requires a configurable number of **first-try successes** (default: 3) to complete:
+Each scale requires a configurable number of **first-try successes** (default: 2) to complete:
 - ✅ **Success**: Moves you closer to completing the scale (reduces goals by 1)
 - ❌ **Failure**: Resets the scale back to the starting number of goals
 - 🎯 **Goal**: Achieve the required successes *in a row* for each scale to build consistency
@@ -164,7 +164,7 @@ Settings can be adjusted in the web UI:
 
 ## How It Works
 
-1. Each scale starts with X tokens (default: 3)
+1. Each scale starts with X tokens (default: 2)
 2. Success decrements token by 1
 3. Failure resets tokens to X
 4. Scale is complete when tokens reach 0

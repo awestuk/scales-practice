@@ -73,7 +73,7 @@ class SessionService
         $stmt->execute();
         $value = $stmt->fetchColumn();
         
-        return $value ? (int)$value : 3;
+        return $value ? (int)$value : 2;
     }
     
     public function updateConfig(string $key, string $value): void
