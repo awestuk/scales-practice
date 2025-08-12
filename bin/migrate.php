@@ -2,13 +2,18 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Storage\Migrations;
+use App\Storage\MigrationRunner;
 
 try {
     echo "Running database migrations...\n";
     
-    $migrations = new Migrations();
-    $migrations->run();
+    $runner = new MigrationRunner();
+    $runner->run();
+    
+    $currentVersion = $runner->getCurrentVersion();
+    if ($currentVersion) {
+        echo "Database is at version: $currentVersion\n";
+    }
     
     echo "Migrations completed successfully!\n";
     exit(0);

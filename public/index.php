@@ -3,17 +3,17 @@ use Slim\Factory\AppFactory;
 use Slim\Middleware\ErrorMiddleware;
 use DI\Container;
 use App\Router;
-use App\Storage\Migrations;
+use App\Storage\MigrationRunner;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 // Run migrations to ensure database is up to date
 try {
-    $migrations = new Migrations();
-    $migrations->run();
+    $runner = new MigrationRunner();
+    $runner->run();
 } catch (Exception $e) {
     // Log but don't stop - migrations might have already run
-    error_log("Migration check: " . $e->getMessage());
+    error_log("Migration error: " . $e->getMessage());
 }
 
 // Start session for CSRF protection
