@@ -61,13 +61,26 @@ document.addEventListener('DOMContentLoaded', function() {
         isWaitingForResponse = false;
     });
     
-    // Add visual feedback for button presses
-    document.addEventListener('click', function(e) {
+    // Add visual feedback for button presses without size change
+    document.addEventListener('mousedown', function(e) {
+        if (e.target.matches('.btn') || e.target.closest('.btn')) {
+            const btn = e.target.matches('.btn') ? e.target : e.target.closest('.btn');
+            btn.style.opacity = '0.9';
+        }
+    });
+    
+    document.addEventListener('mouseup', function(e) {
+        if (e.target.matches('.btn') || e.target.closest('.btn')) {
+            const btn = e.target.matches('.btn') ? e.target : e.target.closest('.btn');
+            btn.style.opacity = '';
+        }
+    });
+    
+    // Clean up on mouse leave to prevent stuck states
+    document.addEventListener('mouseleave', function(e) {
         if (e.target.matches('.btn')) {
-            e.target.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                e.target.style.transform = '';
-            }, 100);
+            e.target.style.opacity = '';
+            e.target.style.transform = '';
         }
     });
 });
