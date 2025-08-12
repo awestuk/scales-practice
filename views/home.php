@@ -9,7 +9,6 @@
                 <h6 class="alert-heading">How it works:</h6>
                 <ul class="mb-0 small">
                     <li>Each scale needs <strong><?= $session->required_successes ?> first-try successes</strong> to complete</li>
-                    <li>✓ Success reduces goals by 1</li>
                     <li>✗ Failure resets the scale back to <?= $session->required_successes ?> goals</li>
                     <li>Complete all scales to finish your session!</li>
                 </ul>
