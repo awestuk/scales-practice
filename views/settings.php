@@ -145,7 +145,7 @@
         
         <!-- Version footer -->
         <div class="text-center text-muted mt-5 mb-3">
-            <small>Version 1.2.0</small>
+            <small>Version 1.3.0</small>
         </div>
     </div>
     

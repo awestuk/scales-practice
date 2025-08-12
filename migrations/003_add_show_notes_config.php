@@ -27,7 +27,7 @@ class Migration003AddShowNotesConfig extends Migration
             $stmt = $this->db->prepare('
                 INSERT INTO config (key, value) VALUES (?, ?)
             ');
-            $stmt->execute(['show_notes', '1']);
+            $stmt->execute(['show_notes', '0']);
         }
     }
 }

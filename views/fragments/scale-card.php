@@ -10,7 +10,7 @@
         
         <div class="mb-4">
             <span class="badge bg-secondary fs-6">
-                Tokens: <?= $scale['tokens_remaining'] ?>
+                Goals Left: <?= $scale['tokens_remaining'] ?>
             </span>
         </div>
         
