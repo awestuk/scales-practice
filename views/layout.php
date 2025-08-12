@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-primary mb-4">
+    <nav class="navbar navbar-dark bg-primary mb-2 mb-md-3">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">🎹 Piano Scale Reps</a>
             <div class="d-flex">
