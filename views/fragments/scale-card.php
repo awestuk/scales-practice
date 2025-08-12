@@ -18,7 +18,7 @@
             <p class="text-muted mb-3">How did you do?</p>
             
             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <button class="btn btn-success btn-lg px-4 py-3" 
+                <button class="btn btn-success btn-lg px-4 py-3 w-100 w-md-auto" 
                         hx-post="/attempt" 
                         hx-vals='{"scale_id": "<?= $scale['scale_id'] ?>", "outcome": "success"}'
                         hx-target="#main-content" 
@@ -26,7 +26,7 @@
                     <span class="fs-4">✓ Nailed It!</span>
                 </button>
                 
-                <button class="btn btn-danger btn-lg px-4 py-3" 
+                <button class="btn btn-danger btn-lg px-4 py-3 w-100 w-md-auto" 
                         hx-post="/attempt" 
                         hx-vals='{"scale_id": "<?= $scale['scale_id'] ?>", "outcome": "fail"}'
                         hx-target="#main-content" 
