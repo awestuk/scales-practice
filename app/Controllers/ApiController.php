@@ -58,6 +58,10 @@ class ApiController
             // Get show_notes setting
             $showNotes = $this->sessionService->getShowNotes();
             
+            // Calculate streak progress
+            $streakProgress = $session->required_successes - $scale['tokens_remaining'];
+            $streakTotal = $session->required_successes;
+            
             // Render scale card
             ob_start();
             include dirname(__DIR__, 2) . '/views/fragments/scale-card.php';
