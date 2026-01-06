@@ -5,6 +5,7 @@ use Slim\App;
 use Slim\Csrf\Guard;
 use App\Controllers\UiController;
 use App\Controllers\ApiController;
+use App\Controllers\AuthController;
 
 class Router
 {
@@ -44,5 +45,11 @@ class Router
         // Stats Fragment Routes (GET)
         $app->get('/stats-badges', [ApiController::class, 'statsBadges'])->add($csrf);
         $app->get('/scale-progress', [ApiController::class, 'scaleProgress'])->add($csrf);
+
+        // Auth Routes
+        $app->get('/login', [AuthController::class, 'loginPage'])->add($csrf);
+        $app->get('/auth/google', [AuthController::class, 'login']);
+        $app->get('/auth/callback', [AuthController::class, 'callback']);
+        $app->get('/logout', [AuthController::class, 'logout']);
     }
 }
