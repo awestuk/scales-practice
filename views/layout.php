@@ -12,15 +12,21 @@
 <body>
     <nav class="navbar navbar-dark bg-primary mb-2 mb-md-3">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">🎹 Piano Scale Reps</a>
-            <div class="d-flex">
+            <a class="navbar-brand" href="/">Piano Scale Reps</a>
+            <div class="d-flex align-items-center">
                 <a href="/settings" class="btn btn-outline-light me-2">Settings</a>
                 <?php if ($session->session_date < date('Y-m-d')): ?>
-                    <button class="btn btn-warning" 
-                            hx-post="/new-day" 
+                    <button class="btn btn-warning me-2"
+                            hx-post="/new-day"
                             hx-target="body">
                         Start New Day
                     </button>
+                <?php endif; ?>
+                <?php if ($isLoggedIn): ?>
+                    <span class="text-light me-2 d-none d-md-inline"><?= htmlspecialchars($user['email']) ?></span>
+                    <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+                <?php else: ?>
+                    <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
                 <?php endif; ?>
             </div>
         </div>

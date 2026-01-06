@@ -7,6 +7,7 @@ use Psr\Container\ContainerInterface;
 use App\Domain\SessionService;
 use App\Domain\StatsService;
 use App\Domain\Scheduler;
+use App\Domain\AuthService;
 use App\Models\Scale;
 use App\Models\Attempt;
 use App\Models\Session;
@@ -16,14 +17,16 @@ class ApiController
     private SessionService $sessionService;
     private StatsService $statsService;
     private Scheduler $scheduler;
+    private AuthService $authService;
     private ContainerInterface $container;
-    
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->sessionService = new SessionService();
         $this->statsService = new StatsService();
         $this->scheduler = new Scheduler();
+        $this->authService = new AuthService();
     }
     
     public function health(Request $request, Response $response): Response
@@ -183,23 +186,29 @@ class ApiController
     
     public function addScale(Request $request, Response $response): Response
     {
+        // Check permission
+        if (!$this->authService->canManageScales()) {
+            $response->getBody()->write('<div class="alert alert-danger">You must be signed in as an admin to add scales</div>');
+            return $response->withStatus(403);
+        }
+
         $data = $request->getParsedBody();
         $name = trim($data['name'] ?? '');
         $notes = trim($data['notes'] ?? '');
-        
+
         if (empty($name)) {
             $response->getBody()->write('<div class="alert alert-danger">Scale name is required</div>');
             return $response->withStatus(400);
         }
-        
+
         try {
             Scale::create($name, $notes);
-            
+
             // Reseed active session with new scale
             $scales = Scale::findAll();
             $scaleIds = array_map(fn($s) => $s->id, $scales);
             $this->sessionService->reseedActiveSession($scaleIds);
-            
+
             // Return updated settings view
             return $this->settings($request, $response);
         } catch (\Exception $e) {
@@ -210,18 +219,24 @@ class ApiController
     
     public function deleteScale(Request $request, Response $response, array $args): Response
     {
+        // Check permission
+        if (!$this->authService->canManageScales()) {
+            $response->getBody()->write('<div class="alert alert-danger">You must be signed in as an admin to delete scales</div>');
+            return $response->withStatus(403);
+        }
+
         $scaleId = (int)$args['id'];
         $scale = Scale::find($scaleId);
-        
+
         if ($scale) {
             $scale->delete();
-            
+
             // Reseed active session without deleted scale
             $scales = Scale::findAll();
             $scaleIds = array_map(fn($s) => $s->id, $scales);
             $this->sessionService->reseedActiveSession($scaleIds);
         }
-        
+
         // Return updated settings view
         return $this->settings($request, $response);
     }

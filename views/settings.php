@@ -11,8 +11,16 @@
 <body>
     <nav class="navbar navbar-dark bg-primary mb-4">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">🎹 Piano Scale Reps</a>
-            <a href="/" class="btn btn-outline-light">Back to Practice</a>
+            <a class="navbar-brand" href="/">Piano Scale Reps</a>
+            <div class="d-flex align-items-center">
+                <a href="/" class="btn btn-outline-light me-2">Back to Practice</a>
+                <?php if ($isLoggedIn): ?>
+                    <span class="text-light me-2 d-none d-md-inline"><?= htmlspecialchars($user['email']) ?></span>
+                    <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+                <?php else: ?>
+                    <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+                <?php endif; ?>
+            </div>
         </div>
     </nav>
     
@@ -81,25 +89,29 @@
                 
                 <!-- Scales Management -->
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Manage Scales</h5>
+                        <?php if ($isLoggedIn): ?>
+                            <span class="badge bg-success">Signed in as <?= htmlspecialchars($user['email']) ?></span>
+                        <?php endif; ?>
                     </div>
                     <div class="card-body">
+                        <?php if ($canManageScales): ?>
                         <!-- Add New Scale -->
                         <form hx-post="/scale/add" hx-target="#settings-content" class="mb-4">
-                            
+
                             <div class="row g-2">
                                 <div class="col-md-5">
-                                    <input type="text" 
-                                           class="form-control" 
-                                           name="name" 
-                                           placeholder="Scale name" 
+                                    <input type="text"
+                                           class="form-control"
+                                           name="name"
+                                           placeholder="Scale name"
                                            required>
                                 </div>
                                 <div class="col-md-5">
-                                    <input type="text" 
-                                           class="form-control" 
-                                           name="notes" 
+                                    <input type="text"
+                                           class="form-control"
+                                           name="notes"
                                            placeholder="Notes (optional)">
                                 </div>
                                 <div class="col-md-2">
@@ -107,7 +119,12 @@
                                 </div>
                             </div>
                         </form>
-                        
+                        <?php else: ?>
+                        <div class="alert alert-info mb-4">
+                            <a href="/login">Sign in</a> to add or remove scales.
+                        </div>
+                        <?php endif; ?>
+
                         <!-- Existing Scales -->
                         <div id="settings-content">
                             <div class="table-responsive">
@@ -115,13 +132,16 @@
                                     <thead>
                                         <tr>
                                             <th>Scale Name</th>
+                                            <?php if ($canManageScales): ?>
                                             <th width="100">Action</th>
+                                            <?php endif; ?>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach ($scales as $scale): ?>
                                             <tr>
                                                 <td><?= htmlspecialchars($scale->name) ?></td>
+                                                <?php if ($canManageScales): ?>
                                                 <td>
                                                     <button class="btn btn-sm btn-danger"
                                                             hx-post="/scale/delete/<?= $scale->id ?>"
@@ -130,6 +150,7 @@
                                                         Delete
                                                     </button>
                                                 </td>
+                                                <?php endif; ?>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
