@@ -157,6 +157,12 @@ class ApiController
     
     public function saveSettings(Request $request, Response $response): Response
     {
+        // Require admin access to save settings
+        if (!$this->authService->isAdmin()) {
+            $response->getBody()->write('<div class="alert alert-danger">You must be signed in as an admin to change settings</div>');
+            return $response->withStatus(403);
+        }
+
         $data = $request->getParsedBody();
         
         // Update required_successes

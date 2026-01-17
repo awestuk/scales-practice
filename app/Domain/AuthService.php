@@ -5,8 +5,6 @@ use League\OAuth2\Client\Provider\Google;
 
 class AuthService
 {
-    private const ADMIN_EMAIL = 'me@awest.uk';
-
     private ?Google $provider = null;
 
     public function getProvider(): Google
@@ -92,7 +90,19 @@ class AuthService
     public function isAdmin(): bool
     {
         $user = $this->getUser();
-        return $user && strtolower($user['email']) === strtolower(self::ADMIN_EMAIL);
+        if (!$user) {
+            return false;
+        }
+
+        $adminEmails = $this->getEnv('ADMIN_EMAILS');
+        if (empty($adminEmails)) {
+            return false;
+        }
+
+        $emails = array_map('trim', explode(',', $adminEmails));
+        $emails = array_map('strtolower', $emails);
+
+        return in_array(strtolower($user['email']), $emails, true);
     }
 
     public function canManageScales(): bool

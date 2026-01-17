@@ -51,6 +51,11 @@ class UiController
     
     public function settings(Request $request, Response $response): Response
     {
+        // Require admin access to view settings
+        if (!$this->authService->isAdmin()) {
+            return $response->withHeader('Location', '/login')->withStatus(302);
+        }
+
         $config = $this->sessionService->getConfig();
         $scales = Scale::findAll();
 
