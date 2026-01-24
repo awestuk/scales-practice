@@ -9,6 +9,7 @@ use App\Domain\StatsService;
 use App\Domain\Scheduler;
 use App\Domain\AuthService;
 use App\Models\Scale;
+use App\Models\ScaleType;
 use App\Models\Attempt;
 use App\Models\Session;
 
@@ -264,7 +265,51 @@ class ApiController
         // Return updated settings view
         return $this->settings($request, $response);
     }
-    
+
+    public function addScaleType(Request $request, Response $response): Response
+    {
+        if (!$this->authService->canManageScales()) {
+            $response->getBody()->write('<div class="alert alert-danger">You must be signed in as an admin to add scale types</div>');
+            return $response->withStatus(403);
+        }
+
+        $data = $request->getParsedBody();
+        $name = trim($data['name'] ?? '');
+
+        if (empty($name)) {
+            $response->getBody()->write('<div class="alert alert-danger">Type name is required</div>');
+            return $response->withStatus(400);
+        }
+
+        try {
+            ScaleType::create($name);
+            return $this->settings($request, $response);
+        } catch (\Exception $e) {
+            $response->getBody()->write('<div class="alert alert-danger">Type already exists</div>');
+            return $response->withStatus(400);
+        }
+    }
+
+    public function deleteScaleType(Request $request, Response $response, array $args): Response
+    {
+        if (!$this->authService->canManageScales()) {
+            $response->getBody()->write('<div class="alert alert-danger">You must be signed in as an admin to delete scale types</div>');
+            return $response->withStatus(403);
+        }
+
+        $typeId = (int)$args['id'];
+        $type = ScaleType::find($typeId);
+
+        if ($type) {
+            if (!$type->delete()) {
+                $response->getBody()->write('<div class="alert alert-warning">Cannot delete type that is in use by scales</div>');
+                return $response->withStatus(400);
+            }
+        }
+
+        return $this->settings($request, $response);
+    }
+
     private function settings(Request $request, Response $response): Response
     {
         $controller = new UiController($this->container);

@@ -8,6 +8,7 @@ use App\Domain\SessionService;
 use App\Domain\StatsService;
 use App\Domain\AuthService;
 use App\Models\Scale;
+use App\Models\ScaleType;
 use Slim\Csrf\Guard;
 
 class UiController
@@ -62,6 +63,7 @@ class UiController
 
         $config = $this->sessionService->getConfig();
         $scales = Scale::findAll();
+        $scaleTypes = ScaleType::findAll();
 
         // Auth info for views
         $user = $this->authService->getUser();

@@ -116,14 +116,9 @@
                                 </div>
                                 <div class="col-md-3">
                                     <select class="form-select" name="type">
-                                        <option value="Other">Other</option>
-                                        <option value="Major Scale">Major Scale</option>
-                                        <option value="Minor Harmonic">Minor Harmonic</option>
-                                        <option value="Minor Melodic">Minor Melodic</option>
-                                        <option value="Third Apart">Third Apart</option>
-                                        <option value="Contrary Motion">Contrary Motion</option>
-                                        <option value="Arpeggio">Arpeggio</option>
-                                        <option value="Dominant Seventh">Dominant Seventh</option>
+                                        <?php foreach ($scaleTypes as $type): ?>
+                                            <option value="<?= htmlspecialchars($type->name) ?>"><?= htmlspecialchars($type->name) ?></option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                                 <div class="col-md-2">
@@ -173,9 +168,64 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Scale Types Management -->
+                <?php if ($canManageScales): ?>
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Manage Scale Types</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Add New Type -->
+                        <form hx-post="/scale-type/add" hx-target="#types-content" class="mb-4">
+                            <div class="row g-2">
+                                <div class="col-md-8">
+                                    <input type="text"
+                                           class="form-control"
+                                           name="name"
+                                           placeholder="New type name"
+                                           required>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-success w-100">Add Type</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Existing Types -->
+                        <div id="types-content">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Type Name</th>
+                                            <th width="100">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($scaleTypes as $type): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($type->name) ?></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                            hx-post="/scale-type/delete/<?= $type->id ?>"
+                                                            hx-target="#types-content"
+                                                            hx-confirm="Delete type '<?= htmlspecialchars($type->name) ?>'? (Only works if no scales use this type)">
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
-        
+
         <!-- Version footer -->
         <div class="text-center text-muted mt-5 mb-3">
             <small>Version 1.3.0</small>

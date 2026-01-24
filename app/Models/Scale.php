@@ -34,10 +34,7 @@ class Scale
 
     public static function getTypes(): array
     {
-        $stmt = Db::getInstance()->query('
-            SELECT DISTINCT type FROM scales WHERE type IS NOT NULL ORDER BY type
-        ');
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return ScaleType::getNames();
     }
     
     public static function find(int $id): ?self

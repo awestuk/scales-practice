@@ -41,6 +41,8 @@ class Router
         $app->post('/settings', [ApiController::class, 'saveSettings'])->add($csrf);
         $app->post('/scale/add', [ApiController::class, 'addScale'])->add($csrf);
         $app->post('/scale/delete/{id}', [ApiController::class, 'deleteScale'])->add($csrf);
+        $app->post('/scale-type/add', [ApiController::class, 'addScaleType'])->add($csrf);
+        $app->post('/scale-type/delete/{id}', [ApiController::class, 'deleteScaleType'])->add($csrf);
         $app->post('/set-type-filter', [ApiController::class, 'setTypeFilter'])->add($csrf);
         
         // Stats Fragment Routes (GET)
