@@ -34,8 +34,8 @@
     
     <div class="container">
         <!-- Stats Badges -->
-        <div id="stats-badges" 
-             hx-get="/stats-badges" 
+        <div id="stats-badges"
+             hx-get="/stats-badges"
              hx-trigger="load, every 2s">
             <?php include __DIR__ . '/fragments/stats-badges.php'; ?>
         </div>

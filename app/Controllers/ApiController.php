@@ -201,6 +201,7 @@ class ApiController
         $data = $request->getParsedBody();
         $name = trim($data['name'] ?? '');
         $notes = trim($data['notes'] ?? '');
+        $type = trim($data['type'] ?? 'Other');
 
         if (empty($name)) {
             $response->getBody()->write('<div class="alert alert-danger">Scale name is required</div>');
@@ -208,10 +209,11 @@ class ApiController
         }
 
         try {
-            Scale::create($name, $notes);
+            Scale::create($name, $notes, $type);
 
-            // Reseed active session with new scale
-            $scales = Scale::findAll();
+            // Reseed active session with new scale (respecting type filter)
+            $typeFilter = $this->sessionService->getTypeFilter();
+            $scales = Scale::findByType($typeFilter);
             $scaleIds = array_map(fn($s) => $s->id, $scales);
             $this->sessionService->reseedActiveSession($scaleIds);
 
@@ -221,6 +223,22 @@ class ApiController
             $response->getBody()->write('<div class="alert alert-danger">Scale already exists</div>');
             return $response->withStatus(400);
         }
+    }
+
+    public function setTypeFilter(Request $request, Response $response): Response
+    {
+        $data = $request->getParsedBody();
+        $type = trim($data['type'] ?? '');
+
+        // Set or clear the type filter
+        $this->sessionService->setTypeFilter($type ?: null);
+
+        // Reset session to apply the new filter
+        $this->sessionService->resetSession();
+
+        // Redirect to refresh the page
+        $response->getBody()->write('<div hx-get="/" hx-trigger="load" hx-target="body"></div>');
+        return $response;
     }
     
     public function deleteScale(Request $request, Response $response, array $args): Response

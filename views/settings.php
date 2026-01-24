@@ -101,18 +101,30 @@
                         <form hx-post="/scale/add" hx-target="#settings-content" class="mb-4">
 
                             <div class="row g-2">
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <input type="text"
                                            class="form-control"
                                            name="name"
                                            placeholder="Scale name"
                                            required>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-3">
                                     <input type="text"
                                            class="form-control"
                                            name="notes"
                                            placeholder="Notes (optional)">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" name="type">
+                                        <option value="Other">Other</option>
+                                        <option value="Major Scale">Major Scale</option>
+                                        <option value="Minor Harmonic">Minor Harmonic</option>
+                                        <option value="Minor Melodic">Minor Melodic</option>
+                                        <option value="Third Apart">Third Apart</option>
+                                        <option value="Contrary Motion">Contrary Motion</option>
+                                        <option value="Arpeggio">Arpeggio</option>
+                                        <option value="Dominant Seventh">Dominant Seventh</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-2">
                                     <button type="submit" class="btn btn-success w-100">Add</button>
@@ -132,6 +144,7 @@
                                     <thead>
                                         <tr>
                                             <th>Scale Name</th>
+                                            <th>Type</th>
                                             <?php if ($canManageScales): ?>
                                             <th width="100">Action</th>
                                             <?php endif; ?>
@@ -141,6 +154,7 @@
                                         <?php foreach ($scales as $scale): ?>
                                             <tr>
                                                 <td><?= htmlspecialchars($scale->name) ?></td>
+                                                <td><span class="badge bg-secondary"><?= htmlspecialchars($scale->type ?? 'Other') ?></span></td>
                                                 <?php if ($canManageScales): ?>
                                                 <td>
                                                     <button class="btn btn-sm btn-danger"

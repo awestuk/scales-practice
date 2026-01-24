@@ -36,6 +36,10 @@ class UiController
         $isLoggedIn = $this->authService->isLoggedIn();
         $canManageScales = $this->authService->canManageScales();
 
+        // Scale type filter info
+        $scaleTypes = Scale::getTypes();
+        $currentTypeFilter = $this->sessionService->getTypeFilter();
+
         // Get CSRF from container and generate tokens
         $csrf = $this->container->get('csrf');
         $csrfNameValue = $csrf->getTokenName();

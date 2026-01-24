@@ -18,24 +18,44 @@ class SessionService
     public function getOrCreateActiveSession(): Session
     {
         $browserSessionId = $this->getBrowserSessionId();
-        
+
         // Check for existing active session today for this browser session
         $session = Session::findActive($browserSessionId);
-        
+
         if ($session) {
             return $session;
         }
-        
+
         // Create new session with current config
         $requiredSuccesses = $this->getRequiredSuccesses();
         $session = Session::createNew($browserSessionId, $requiredSuccesses);
-        
-        // Initialize all scales for the session
-        $scales = Scale::findAll();
+
+        // Initialize scales for the session (filtered by type if set)
+        $typeFilter = $this->getTypeFilter();
+        $scales = Scale::findByType($typeFilter);
         $scaleIds = array_map(fn($s) => $s->id, $scales);
         $session->initializeScales($scaleIds);
-        
+
         return $session;
+    }
+
+    public function setTypeFilter(?string $type): void
+    {
+        if ($type === null || $type === '') {
+            unset($_SESSION['scale_type_filter']);
+        } else {
+            $_SESSION['scale_type_filter'] = $type;
+        }
+    }
+
+    public function getTypeFilter(): ?string
+    {
+        return $_SESSION['scale_type_filter'] ?? null;
+    }
+
+    public function clearTypeFilter(): void
+    {
+        unset($_SESSION['scale_type_filter']);
     }
     
     public function resetSession(): Session
