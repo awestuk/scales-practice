@@ -33,6 +33,7 @@ class Db
                 // Enable WAL mode for better concurrency
                 self::$instance->exec('PRAGMA journal_mode=WAL');
                 self::$instance->exec('PRAGMA synchronous=NORMAL');
+                self::$instance->exec('PRAGMA foreign_keys=ON');
                 
             } catch (PDOException $e) {
                 throw new \RuntimeException('Failed to connect to database: ' . $e->getMessage());

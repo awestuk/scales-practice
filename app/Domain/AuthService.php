@@ -70,11 +70,13 @@ class AuthService
     public function login(array $userData): void
     {
         $_SESSION['user'] = $userData;
+        session_regenerate_id(true);
     }
 
     public function logout(): void
     {
         unset($_SESSION['user']);
+        session_regenerate_id(true);
     }
 
     public function getUser(): ?array

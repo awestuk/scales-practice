@@ -31,7 +31,8 @@ class Scheduler
         // Check if we should allow immediate repeat
         $allowRepeat = false;
         if (count($candidates) === 1) {
-            $stmt = $db->query('SELECT value FROM config WHERE key = "allow_repeat_when_last_only"');
+            $stmt = $db->prepare('SELECT value FROM config WHERE key = ?');
+            $stmt->execute(['allow_repeat_when_last_only']);
             $allowRepeat = $stmt->fetchColumn() === '1';
         }
         
@@ -85,11 +86,11 @@ class Scheduler
     public function updateLastShown(int $sessionId, int $scaleId, int $attemptNo): void
     {
         $stmt = Db::getInstance()->prepare('
-            UPDATE session_scale_state 
-            SET last_shown_at = ? 
+            UPDATE session_scale_state
+            SET last_shown_at = ?
             WHERE session_id = ? AND scale_id = ?
         ');
-        $stmt->execute([$attemptNo, $sessionId, $scaleId]);
+        $stmt->execute([time(), $sessionId, $scaleId]);
     }
     
     public function recordOutcome(int $sessionId, int $scaleId, string $outcome, int $requiredSuccesses): void
@@ -99,9 +100,9 @@ class Scheduler
         if ($outcome === 'success') {
             // Decrement tokens
             $stmt = $db->prepare('
-                UPDATE session_scale_state 
-                SET 
-                    tokens_remaining = MAX(0, tokens_remaining - 1),
+                UPDATE session_scale_state
+                SET
+                    tokens_remaining = CASE WHEN tokens_remaining > 0 THEN tokens_remaining - 1 ELSE 0 END,
                     successes = successes + 1
                 WHERE session_id = ? AND scale_id = ?
             ');
