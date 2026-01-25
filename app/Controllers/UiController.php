@@ -64,6 +64,7 @@ class UiController
         $config = $this->sessionService->getConfig();
         $scales = Scale::findAll();
         $scaleTypes = ScaleType::findAll();
+        $lastScaleType = $_SESSION['last_scale_type'] ?? null;
 
         // Auth info for views
         $user = $this->authService->getUser();

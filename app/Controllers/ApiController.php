@@ -212,6 +212,9 @@ class ApiController
         try {
             Scale::create($name, $notes, $type);
 
+            // Remember last selected type for convenience
+            $_SESSION['last_scale_type'] = $type;
+
             // Reseed active session with new scale (respecting type filter)
             $typeFilter = $this->sessionService->getTypeFilter();
             $scales = Scale::findByType($typeFilter);
@@ -221,7 +224,7 @@ class ApiController
             // Return updated settings view
             return $this->settings($request, $response);
         } catch (\Exception $e) {
-            $response->getBody()->write('<div class="alert alert-danger">Scale already exists</div>');
+            $response->getBody()->write('<div class="alert alert-danger">Scale with this name and type already exists</div>');
             return $response->withStatus(400);
         }
     }

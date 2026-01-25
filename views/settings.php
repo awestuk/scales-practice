@@ -98,7 +98,7 @@
                     <div class="card-body">
                         <?php if ($canManageScales): ?>
                         <!-- Add New Scale -->
-                        <form hx-post="/scale/add" hx-target="body" class="mb-4">
+                        <form hx-post="/scale/add" hx-target="body" hx-swap="outerHTML scroll:no-scroll" class="mb-4">
 
                             <div class="row g-2">
                                 <div class="col-md-4">
@@ -117,7 +117,7 @@
                                 <div class="col-md-3">
                                     <select class="form-select" name="type">
                                         <?php foreach ($scaleTypes as $type): ?>
-                                            <option value="<?= htmlspecialchars($type->name) ?>"><?= htmlspecialchars($type->name) ?></option>
+                                            <option value="<?= htmlspecialchars($type->name) ?>" <?= $lastScaleType === $type->name ? 'selected' : '' ?>><?= htmlspecialchars($type->name) ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -155,6 +155,7 @@
                                                     <button class="btn btn-sm btn-danger"
                                                             hx-post="/scale/delete/<?= $scale->id ?>"
                                                             hx-target="body"
+                                                            hx-swap="outerHTML scroll:no-scroll"
                                                             hx-confirm="Delete <?= htmlspecialchars($scale->name) ?>?">
                                                         Delete
                                                     </button>
@@ -177,7 +178,7 @@
                     </div>
                     <div class="card-body">
                         <!-- Add New Type -->
-                        <form hx-post="/scale-type/add" hx-target="body" class="mb-4">
+                        <form hx-post="/scale-type/add" hx-target="body" hx-swap="outerHTML scroll:no-scroll" class="mb-4">
                             <div class="row g-2">
                                 <div class="col-md-8">
                                     <input type="text"
@@ -210,6 +211,7 @@
                                                     <button class="btn btn-sm btn-outline-danger"
                                                             hx-post="/scale-type/delete/<?= $type->id ?>"
                                                             hx-target="body"
+                                                            hx-swap="outerHTML scroll:no-scroll"
                                                             hx-confirm="Delete type '<?= htmlspecialchars($type->name) ?>'? (Only works if no scales use this type)">
                                                         Delete
                                                     </button>
