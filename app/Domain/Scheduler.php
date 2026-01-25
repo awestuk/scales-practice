@@ -11,12 +11,13 @@ class Scheduler
         
         // Get all scales with tokens remaining > 0
         $stmt = $db->prepare('
-            SELECT 
+            SELECT
                 sss.scale_id,
                 sss.tokens_remaining,
                 sss.last_shown_at,
                 s.name,
-                s.notes
+                s.notes,
+                s.type
             FROM session_scale_state sss
             JOIN scales s ON s.id = sss.scale_id
             WHERE sss.session_id = ? AND sss.tokens_remaining > 0

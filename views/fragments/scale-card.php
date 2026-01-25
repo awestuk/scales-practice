@@ -1,8 +1,11 @@
 <div class="card scale-card">
     <div class="card-body text-center p-5">
-        <h1 class="display-3 mb-4 scale-name" data-scale-id="<?= $scale['scale_id'] ?>">
+        <h1 class="display-3 mb-3 scale-name" data-scale-id="<?= $scale['scale_id'] ?>">
             <?= htmlspecialchars($scale['name']) ?>
         </h1>
+        <p class="mb-4">
+            <span class="badge bg-primary fs-6"><?= htmlspecialchars($scale['type'] ?? 'Other') ?></span>
+        </p>
         
         <?php if ($showNotes && !empty($scale['notes'])): ?>
             <p class="text-muted fs-5 mb-4"><?= htmlspecialchars($scale['notes']) ?></p>

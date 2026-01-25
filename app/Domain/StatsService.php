@@ -32,13 +32,14 @@ class StatsService
         
         // Get per-scale stats
         $stmt = $db->prepare('
-            SELECT 
+            SELECT
                 sss.*,
-                s.name as scale_name
+                s.name as scale_name,
+                s.type as scale_type
             FROM session_scale_state sss
             JOIN scales s ON s.id = sss.scale_id
             WHERE sss.session_id = ?
-            ORDER BY s.name
+            ORDER BY s.type, s.name
         ');
         $stmt->execute([$sessionId]);
         $scales = $stmt->fetchAll();

@@ -244,6 +244,15 @@
             event.detail.parameters['csrf_name'] = csrfName;
             event.detail.parameters['csrf_value'] = csrfValue;
         });
+
+        // Preserve scroll position across page refreshes
+        let savedScrollY = 0;
+        document.body.addEventListener('htmx:beforeSwap', () => {
+            savedScrollY = window.scrollY;
+        });
+        document.body.addEventListener('htmx:afterSwap', () => {
+            window.scrollTo(0, savedScrollY);
+        });
     </script>
 </body>
 </html>

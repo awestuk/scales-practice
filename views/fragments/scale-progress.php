@@ -8,7 +8,10 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="scale-progress-item">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <small class="text-truncate me-2"><?= htmlspecialchars($scale['scale_name']) ?></small>
+                            <small class="text-truncate me-2">
+                                <?= htmlspecialchars($scale['scale_name']) ?>
+                                <span class="badge bg-secondary" style="font-size: 0.65em;"><?= htmlspecialchars($scale['scale_type'] ?? 'Other') ?></span>
+                            </small>
                             <small class="text-muted">
                                 <?= $scale['successes'] ?>✓ <?= $scale['failures'] ?>✗
                             </small>
