@@ -110,10 +110,8 @@ class ApiController
     public function resetSession(Request $request, Response $response): Response
     {
         $this->sessionService->resetSession();
-        
-        // Return refreshed home view
-        $response->getBody()->write('<div hx-get="/" hx-trigger="load" hx-target="body"></div>');
-        return $response;
+
+        return $response->withHeader('HX-Redirect', '/');
     }
     
     public function newDay(Request $request, Response $response): Response
@@ -122,12 +120,10 @@ class ApiController
             $response->getBody()->write('<div class="alert alert-warning">A session already exists for today</div>');
             return $response;
         }
-        
+
         $this->sessionService->getOrCreateActiveSession();
-        
-        // Return refreshed home view
-        $response->getBody()->write('<div hx-get="/" hx-trigger="load" hx-target="body"></div>');
-        return $response;
+
+        return $response->withHeader('HX-Redirect', '/');
     }
     
     public function statsBadges(Request $request, Response $response): Response
@@ -240,9 +236,7 @@ class ApiController
         // Reset session to apply the new filter
         $this->sessionService->resetSession();
 
-        // Redirect to refresh the page
-        $response->getBody()->write('<div hx-get="/" hx-trigger="load" hx-target="body"></div>');
-        return $response;
+        return $response->withHeader('HX-Redirect', '/');
     }
     
     public function deleteScale(Request $request, Response $response, array $args): Response
