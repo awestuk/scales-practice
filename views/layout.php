@@ -36,7 +36,7 @@
         <!-- Stats Badges -->
         <div id="stats-badges"
              hx-get="/stats-badges"
-             hx-trigger="load, every 2s">
+             hx-trigger="load, scaleUpdated from:body">
             <?php include __DIR__ . '/fragments/stats-badges.php'; ?>
         </div>
         
@@ -52,9 +52,9 @@
         <!-- Scale Progress -->
         <div class="row justify-content-center mt-4">
             <div class="col-md-10 col-lg-8">
-                <div id="scale-progress" 
-                     hx-get="/scale-progress" 
-                     hx-trigger="load, every 2s">
+                <div id="scale-progress"
+                     hx-get="/scale-progress"
+                     hx-trigger="load, scaleUpdated from:body">
                     <?php include __DIR__ . '/fragments/scale-progress.php'; ?>
                 </div>
             </div>

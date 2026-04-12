@@ -80,9 +80,9 @@ class ApiController
         }
         
         $response->getBody()->write($html);
-        return $response;
+        return $response->withHeader('HX-Trigger', 'scaleUpdated');
     }
-    
+
     public function attempt(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();
@@ -253,8 +253,9 @@ class ApiController
         if ($scale) {
             $scale->delete();
 
-            // Reseed active session without deleted scale
-            $scales = Scale::findAll();
+            // Reseed active session without deleted scale (respecting type filter)
+            $typeFilter = $this->sessionService->getTypeFilter();
+            $scales = Scale::findByType($typeFilter);
             $scaleIds = array_map(fn($s) => $s->id, $scales);
             $this->sessionService->reseedActiveSession($scaleIds);
         }

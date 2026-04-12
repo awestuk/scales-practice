@@ -45,26 +45,26 @@ class Scheduler
         // Use weighted random selection
         $weights = [];
         $totalWeight = 0;
-        
+
+        // Pre-compute max last_shown_at for recency bonus
+        $lastShownValues = array_filter(array_column($candidates, 'last_shown_at'), fn($v) => !is_null($v));
+        $maxLastShown = !empty($lastShownValues) ? max($lastShownValues) : null;
+
         foreach ($candidates as $index => $candidate) {
             // Base weight: 1 for never attempted, 2 for attempted scales
             $weight = is_null($candidate['last_shown_at']) ? 1.0 : 2.0;
-            
+
             // Bonus weight for scales needing more work (0.1 per remaining token)
             // This gives a slight preference to scales that need more practice
             $weight += $candidate['tokens_remaining'] * 0.1;
-            
+
             // Recency bonus: scales shown longer ago get a small boost
             // This prevents any scale from being ignored too long
-            if (!is_null($candidate['last_shown_at'])) {
-                $lastShownValues = array_filter(array_column($candidates, 'last_shown_at'), fn($v) => !is_null($v));
-                if (!empty($lastShownValues)) {
-                    $maxLastShown = max($lastShownValues);
-                    $ageRatio = 1 - ($candidate['last_shown_at'] / ($maxLastShown + 1));
-                    $weight += $ageRatio * 0.5; // Up to 0.5 bonus for oldest scales
-                }
+            if (!is_null($candidate['last_shown_at']) && $maxLastShown !== null) {
+                $ageRatio = 1 - ($candidate['last_shown_at'] / ($maxLastShown + 1));
+                $weight += $ageRatio * 0.5; // Up to 0.5 bonus for oldest scales
             }
-            
+
             $weights[$index] = $weight;
             $totalWeight += $weight;
         }
